@@ -8,6 +8,18 @@ crowd in Growing Guns.
 Two values drive the mix: `enthusiasm` (exciting play) and `fear` (the crowd
 itself in danger). Reactions raise them; they decay on their own.
 
+## How it was tuned
+
+The murmur and applause were tuned with an audio AI as judge: the EfficientAT
+AudioSet taggers score each bake. Murmur is scored by embedding similarity to
+real multi-talker speech babble: 0.47 for the old noise-based walla, about 0.84
+for the talker synthesis (real babble: 0.88). Applause is scored on the
+Applause + Clapping labels: about 1.4 out of 2, where the old pats scored 0 and
+read as rain. The scripts are in the GameNight project files
+(`crowd-sound/ai-tools`).
+
+Baking is time-sliced: synthesis yields to the next frame after 2.5 ms of work.
+
 ## Use it
 
 Copy the addon into your game:
