@@ -1,0 +1,44 @@
+# Godot crowd sound
+
+Procedural crowd audio for Godot 4.5+. No samples: a murmur bed, cheers,
+applause, "ooh"s, screams, a kick-off surge, a goal roar and chants are all
+synthesized at boot, spread over a few frames. It started as the colosseum
+crowd in Growing Guns.
+
+Two values drive the mix: `enthusiasm` (exciting play) and `fear` (the crowd
+itself in danger). Reactions raise them; they decay on their own.
+
+## Use it
+
+Copy the addon into your game:
+
+    python sync.py path/to/game
+
+Then add the node and tell it when there is an audience:
+
+```gdscript
+var crowd = preload("res://addons/crowd_sound/crowd_sound.gd").new()
+add_child(crowd)
+crowd.set_bus(&"SFX")
+crowd.active = true
+crowd.kickoff()       # anticipation swell
+crowd.hit()           # bump, sometimes an "ooh"
+crowd.roar()          # big moment
+crowd.celebrate()     # goal / win: eruption, applause, then a chant
+crowd.excite(0.2)     # mood only
+crowd.scare(0.3, pos) # screams
+```
+
+Extend the script to tune the mix (`murmur_db`, `cheer_db`, ...) or to hook into
+your game: `_play_oneshot` routes reactions through your own mixer,
+`_loudness_db` ducks the beds under loud action, `_chant_position` places chants
+in 3D and `_suppressed` mutes reactions. The header of `crowd_sound.gd` explains
+each.
+
+## Used by
+
+- Growing Guns (`scripts/crowd_audio.gd`: colosseum ring, SFX mixer, crowd shader)
+- Ballkickers (`src/crowd_sound.gd`: football events and mix)
+
+After changing the addon, run `sync.py` on each game and commit there too.
+`python sync.py --check path/to/game` tells you whether a copy is current.
