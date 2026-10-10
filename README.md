@@ -1,9 +1,11 @@
 # Godot crowd sound
 
-Procedural crowd audio for Godot 4.5+. No samples: a murmur bed, cheers,
-applause, "ooh"s, screams, a kick-off surge, a goal roar and chants are all
-synthesized at boot, spread over a few frames. It started as the colosseum
-crowd in Growing Guns.
+Crowd audio for Godot 4.5+: a murmur bed, cheers, applause, "ooh"s, screams,
+a kick-off surge, goal eruptions and chants. The voiced parts play short CC0
+stadium recordings from Freesound (`addons/crowd_sound/samples`, 2.2 MB, sources
+in its `CREDITS.md`); murmur and applause are synthesized at boot. Set
+`use_samples = false` before adding the node for the old fully procedural
+crowd. It started as the colosseum crowd in Growing Guns.
 
 Two values drive the mix: `enthusiasm` (exciting play) and `fear` (the crowd
 itself in danger). Reactions raise them; they decay on their own.
@@ -53,4 +55,13 @@ each.
 - Ballkickers (`src/crowd_sound.gd`: football events and mix)
 
 After changing the addon, run `sync.py` on each game and commit there too.
+Open the game in Godot (or run `godot --headless --import`) once so the new
+samples get imported.
+
+## Samples
+
+`tools/freesound_search.py` lists CC0 candidates from Freesound and
+`tools/build_samples.py` cuts, fades, loops and loudness-matches them into
+`samples/`. Each clip was chosen by an AudioSet tagger (EfficientAT) scoring 5 s
+windows of the recordings for Crowd, Cheering, Screaming and Chant.
 `python sync.py --check path/to/game` tells you whether a copy is current.

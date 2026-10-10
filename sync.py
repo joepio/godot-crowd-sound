@@ -7,7 +7,8 @@ this from a checkout of this repository after changing the addon:
     python sync.py path/to/game            # update the game's copy
     python sync.py --check path/to/game    # fail if the copy differs
 
-A game's own `.uid` file is kept, because its scripts may refer to it.
+Everything under `addons/crowd_sound` is copied, samples included. A game's own
+`.uid` files are kept, because its scripts may refer to them.
 """
 import argparse
 import shutil
@@ -15,7 +16,11 @@ import sys
 from pathlib import Path
 
 ADDON = Path(__file__).resolve().parent / "addons" / "crowd_sound"
-FILES = ["crowd_sound.gd"]
+
+
+def addon_files() -> list[str]:
+    return sorted(str(p.relative_to(ADDON)) for p in ADDON.rglob("*")
+                  if p.is_file() and p.suffix != ".uid")
 
 
 def sync(game: Path, check: bool) -> list[str]:
@@ -23,7 +28,7 @@ def sync(game: Path, check: bool) -> list[str]:
         return [f"{game}: not a Godot project (no project.godot)"]
     target_dir = game / "addons" / "crowd_sound"
     problems = []
-    for name in FILES:
+    for name in addon_files():
         source, target = ADDON / name, target_dir / name
         if target.is_file() and target.read_bytes() == source.read_bytes():
             continue
@@ -31,11 +36,11 @@ def sync(game: Path, check: bool) -> list[str]:
             state = "missing" if not target.exists() else "differs from godot-crowd-sound"
             problems.append(f"{target}: {state}")
             continue
-        target_dir.mkdir(parents=True, exist_ok=True)
+        target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
         uid = ADDON / f"{name}.uid"
-        if uid.exists() and not (target_dir / uid.name).exists():
-            shutil.copyfile(uid, target_dir / uid.name)
+        if uid.exists() and not (target_dir / f"{name}.uid").exists():
+            shutil.copyfile(uid, target_dir / f"{name}.uid")
         print(f"updated {target}")
     return problems
 
