@@ -1,0 +1,23 @@
+name: Checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Godot 4.5.2
+        run: |
+          curl -fL --retry 3 -o godot.zip https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip
+          echo "87f6e6be292929e363d15ed9052f277b2ba4e95ed994e1e099048097be2dfd03  godot.zip" | sha256sum -c -
+          unzip -q godot.zip -d godot-bin
+      - name: Import, boot the crowd and play every reaction
+        run: |
+          GODOT=godot-bin/Godot_v4.5.2-stable_linux.x86_64
+          "$GODOT" --headless --editor --import --path . 2>&1 | tee import.log
+          ! grep -E "SCRIPT ERROR|Parse Error" import.log
+          "$GODOT" --headless --audio-driver Dummy --path . --script res://tests/smoke.gd 2>&1 | tee smoke.log
+          grep -q CROWD_SMOKE_PASS smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error" smoke.log

@@ -1,0 +1,8 @@
+; Only for the addon's own checks. Games copy addons/crowd_sound with sync.py.
+config_version=5
+
+[application]
+config/name="crowd-sound-checks"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
