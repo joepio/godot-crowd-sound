@@ -28,6 +28,14 @@ Copy the addon into your game:
 
     python sync.py path/to/game
 
+In the game's CI, fail when its copy falls behind this repository's main:
+
+```yaml
+jobs:
+  crowd-sound:
+    uses: joepio/godot-crowd-sound/.github/workflows/sync-check.yml@main
+```
+
 Then add the node and tell it when there is an audience:
 
 ```gdscript

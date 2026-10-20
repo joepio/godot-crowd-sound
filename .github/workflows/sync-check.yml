@@ -1,0 +1,35 @@
+# Reusable check for games that vendor addons/crowd_sound. It fails when a
+# game's copy differs from this repository's main branch.
+#
+#   jobs:
+#     crowd-sound:
+#       uses: joepio/godot-crowd-sound/.github/workflows/sync-check.yml@main
+#       with:
+#         path: .   # the folder holding project.godot
+name: crowd_sound sync check
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Godot project directories in the calling repository, separated by spaces
+        type: string
+        default: .
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: game
+      - uses: actions/checkout@v4
+        with:
+          repository: joepio/godot-crowd-sound
+          ref: main
+          path: crowd-sound
+      - name: Compare addons/crowd_sound with godot-crowd-sound
+        working-directory: game
+        env:
+          GAME_PATHS: ${{ inputs.path }}
+        run: python3 ../crowd-sound/sync.py --check $GAME_PATHS
